@@ -2,4 +2,9 @@
 
 
 #include "TrainingCampGameModeBase.h"
+#include "Character/CharacterBase.h"
 
+ATrainingCampGameModeBase::ATrainingCampGameModeBase()
+{
+	DefaultPawnClass = ACharacterBase::StaticClass();
+}

@@ -14,4 +14,7 @@ class TRAININGCAMP_API ATrainingCampGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+public:
+	ATrainingCampGameModeBase();
+
 };
