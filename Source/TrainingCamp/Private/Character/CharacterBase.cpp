@@ -70,6 +70,7 @@ void ACharacterBase::Shoot()
 	WeaponTrace();
 }
 
+// Struct que se encarga de generar el rayo del arma
 FHitResult ACharacterBase::WeaponTrace() const
 {
 	// Variable que guarda la información del rayo
