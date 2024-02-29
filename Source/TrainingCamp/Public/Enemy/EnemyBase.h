@@ -19,6 +19,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Stats")
 	float EnemyHP;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+	float DamageTaken;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
