@@ -3,6 +3,9 @@
 
 #include "Character/CharacterBase.h"
 #include "Components/CapsuleComponent.h"
+#include "DrawDebugHelpers.h"
+
+#define COLLISION_WEAPON		ECC_GameTraceChannel1
 
 /////////////////////////////////////////////////////////////
 // Sets default values
@@ -18,15 +21,27 @@ ACharacterBase::ACharacterBase()
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(0, 0, 64.f));
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
-	/** Creación de Mesh */
+	/** Creación de Mesh de Jugador */
 	FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
 	FirstPersonMesh->SetupAttachment(FirstPersonCameraComponent);
 	FirstPersonMesh->bCastDynamicShadow = false;
 	FirstPersonMesh->CastShadow = false;
 
+	/** Creación de Mesh de Arma */
+	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
+	WeaponMesh->bCastDynamicShadow = false;
+	WeaponMesh->CastShadow = false;
+	WeaponMesh->SetupAttachment(FirstPersonMesh, TEXT("GripPoint"));
+
+	/** Creación del componente de escena */
+	FireLocation = CreateDefaultSubobject<USceneComponent>(TEXT("FireLocation"));
+	FireLocation->SetupAttachment(FirstPersonMesh, TEXT("GripPoint"));
+
+	WeaponRange = 3000.0f;
 }
 
-
+/////////////////////////////////////////////////////////////
+// Input
 
 // Called to bind functionality to input
 void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -37,6 +52,9 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
+	// Disparo
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ACharacterBase::Shoot);
+
 	// Movimientos de personaje
 	PlayerInputComponent->BindAxis("MoveForward", this, &ACharacterBase::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ACharacterBase::MoveRight);
@@ -45,6 +63,29 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
+}
+
+void ACharacterBase::Shoot()
+{
+	WeaponTrace();
+}
+
+FHitResult ACharacterBase::WeaponTrace() const
+{
+	// Variable que guarda la información del rayo
+	FHitResult ImpactInfo;
+	// Posición de inicio
+	FVector LineOrigin = FireLocation->GetComponentLocation();
+	// Posición final
+	FRotator CamRot = FireLocation->GetComponentRotation();
+	FVector LineEnd = LineOrigin + CamRot.Vector() * WeaponRange;
+	// Creación del rayo
+	GetWorld()->LineTraceSingleByChannel(ImpactInfo, LineOrigin, LineEnd, COLLISION_WEAPON);
+
+	//Dibujado de linea desde inicio hasta final del rayo
+	DrawDebugLine(GetWorld(), LineOrigin, LineEnd, FColor::Green, false, 3);
+
+	return ImpactInfo;
 }
 
 void ACharacterBase::MoveRight(float Val)
@@ -64,4 +105,5 @@ void ACharacterBase::MoveForward(float Val)
 		AddMovementInput(GetActorForwardVector(), Val);
 	}
 }
+
 

@@ -25,6 +25,10 @@ class TRAININGCAMP_API ACharacterBase : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCameraComponent;
 
+	/** Componente de escena para la posición del line trace */
+	UPROPERTY(VisibleAnywhere, Category = Mesh)
+	USceneComponent* FireLocation;
+	
 public:
 	// Sets default values for this character's properties
 	ACharacterBase();
@@ -37,6 +41,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookUpRate;
 
+	/** Distancia de dibujado del rayo */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
+	float WeaponRange;
+
 protected:
 	
 	/** Movimiento lateral */
@@ -44,6 +52,12 @@ protected:
 
 	/** Movimiento frontal */
 	void MoveForward(float Val);
+
+	/** Disparo de arma principal */
+	void Shoot();
+
+	/** Struct para el disparo del rayo */
+	FHitResult WeaponTrace() const;
 
 	/** Interfaz APawn para movimiento */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
