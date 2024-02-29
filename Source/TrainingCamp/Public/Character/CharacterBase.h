@@ -45,6 +45,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
 	float WeaponRange;
 
+	/** Mapa de daño por zonas, editable desde BP */
+	UPROPERTY(EditAnywhere, Category = "Damage Zones")
+	TMap<FName, float> BoneDamage;
+
 protected:
 	
 	/** Movimiento lateral */
