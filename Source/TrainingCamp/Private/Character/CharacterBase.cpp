@@ -4,6 +4,7 @@
 #include "Character/CharacterBase.h"
 #include "Components/CapsuleComponent.h"
 #include "DrawDebugHelpers.h"
+#include "Damageable.h"
 
 #define COLLISION_WEAPON		ECC_GameTraceChannel1
 
@@ -38,6 +39,7 @@ ACharacterBase::ACharacterBase()
 	FireLocation->SetupAttachment(FirstPersonMesh, TEXT("GripPoint"));
 
 	WeaponRange = 3000.0f;
+	WeaponDamage = 500.0f;
 }
 
 /////////////////////////////////////////////////////////////
@@ -67,7 +69,15 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 void ACharacterBase::Shoot()
 {
-	WeaponTrace();
+	FHitResult HitInfo = WeaponTrace();
+
+	// Casteo a la interfaz de daño para enemigos y daño según zona de cuerpo
+	IDamageable* DamageInterface = Cast<IDamageable>(HitInfo.Actor);
+	if (DamageInterface && BoneDamage.Contains(HitInfo.BoneName))
+	{
+		float DamageValue = BoneDamage[HitInfo.BoneName];
+		DamageInterface->TakeDamage(WeaponDamage * DamageValue);	
+	}
 }
 
 // Struct que se encarga de generar el rayo del arma
@@ -77,7 +87,7 @@ FHitResult ACharacterBase::WeaponTrace() const
 	FHitResult ImpactInfo;
 	// Posición de inicio
 	FVector LineOrigin = FireLocation->GetComponentLocation();
-	// Posición final
+	// Posición final (con rotación)
 	FRotator CamRot = FireLocation->GetComponentRotation();
 	FVector LineEnd = LineOrigin + CamRot.Vector() * WeaponRange;
 	// Creación del rayo
