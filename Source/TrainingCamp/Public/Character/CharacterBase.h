@@ -64,6 +64,9 @@ protected:
 	/** Disparo de arma principal */
 	void Shoot();
 
+	/** Prendido y apagado de la linterna */
+	void ToggleLight();
+
 	/** Struct para el disparo del rayo */
 	FHitResult WeaponTrace() const;
 
