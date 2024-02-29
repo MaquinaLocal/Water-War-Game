@@ -6,5 +6,6 @@
 
 ATrainingCampGameModeBase::ATrainingCampGameModeBase()
 {
-	DefaultPawnClass = ACharacterBase::StaticClass();
+	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/BPs/FP_Character"));
+	DefaultPawnClass = PlayerPawnClassFinder.Class;
 }
