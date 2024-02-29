@@ -5,6 +5,7 @@
 #include "Components/CapsuleComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Damageable.h"
+#include "Items/LanternBase.h"
 
 #define COLLISION_WEAPON		ECC_GameTraceChannel1
 
@@ -65,6 +66,8 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
+	// Uso de linterna
+	PlayerInputComponent->BindAction("Lantern", IE_Pressed, this, &ACharacterBase::ToggleLight);
 }
 
 void ACharacterBase::Shoot()
@@ -78,6 +81,18 @@ void ACharacterBase::Shoot()
 		float DamageValue = BoneDamage[HitInfo.BoneName];
 		DamageInterface->TakeDamage(WeaponDamage * DamageValue);	
 	}
+}
+
+void ACharacterBase::ToggleLight()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Enter"));
+
+	ULanternBase* LightComponent = this->FindComponentByClass<ULanternBase>();
+	
+	if (LightComponent)
+		LightComponent->ToggleLight();
+	else
+		UE_LOG(LogTemp, Warning, TEXT("Failed"));
 }
 
 // Struct que se encarga de generar el rayo del arma
