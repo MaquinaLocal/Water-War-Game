@@ -40,9 +40,7 @@ void AEnemyBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 // Daño que recibe el personaje
 void AEnemyBase::TakeDamage(float Dmg)
 {
-	//Ver daño en el log (temporal)
-	UE_LOG(LogTemp, Warning, TEXT("Damage: %f"), Dmg);
-
+	DamageTaken = Dmg;
 	EnemyHP -= Dmg;
 	//if (EnemyHP <= 0)
 		//Destroy();
