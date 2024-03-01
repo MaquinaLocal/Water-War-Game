@@ -5,8 +5,8 @@
 #include "Components/CapsuleComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Damageable.h"
-#include "FlashlightBase.h"
-#include "Kismet/GameplayStatics.h"
+#include "Components/SpotLightComponent.h"
+
 
 #define COLLISION_WEAPON		ECC_GameTraceChannel1
 
@@ -40,8 +40,22 @@ ACharacterBase::ACharacterBase()
 	FireLocation = CreateDefaultSubobject<USceneComponent>(TEXT("FireLocation"));
 	FireLocation->SetupAttachment(FirstPersonMesh, TEXT("GripPoint"));
 
+	/** Luz puntual */
+	FlashLight = CreateDefaultSubobject<USpotLightComponent>(TEXT("FlashLight"));
+	FlashLight->SetupAttachment(FirstPersonCameraComponent);
+
+	//Valores por defecto arma
 	WeaponRange = 3000.0f;
 	WeaponDamage = 500.0f;
+
+	//Valores por defecto flashlight
+	FlashLight->SetRelativeLocation(FVector(70.0f,20.0f,140.0f));
+	FlashLight->SetRelativeRotation(FRotator::ZeroRotator);
+	FlashLight->Intensity = 5000.0f;
+	FlashLight->LightColor = FColor::White;
+	bIsLightOn = false;
+	FlashLight->SetVisibility(bIsLightOn);
+	iteration = 0;
 }
 
 /////////////////////////////////////////////////////////////
@@ -68,7 +82,27 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
 	// Uso de linterna
-	PlayerInputComponent->BindAction("Lantern", IE_Pressed, this, &ACharacterBase::ToggleLight);
+	PlayerInputComponent->BindAction("Flashlight", IE_Pressed, this, &ACharacterBase::ToggleLight);
+	PlayerInputComponent->BindAction("LightColor", IE_Pressed, this, &ACharacterBase::ChangeColorOfLight);
+	PlayerInputComponent->BindAction("LightIntensity", IE_Pressed, this, &ACharacterBase::ChangeIntensityOfLight);
+}
+
+void ACharacterBase::MoveRight(float Val)
+{
+	if (Val != 0.0f)
+	{
+		// Add movement in that direction
+		AddMovementInput(GetActorRightVector(), Val);
+	}
+}
+
+void ACharacterBase::MoveForward(float Val)
+{
+	if (Val != 0.0f)
+	{
+		// Add movement in that direction
+		AddMovementInput(GetActorForwardVector(), Val);
+	}
 }
 
 void ACharacterBase::Shoot()
@@ -82,18 +116,6 @@ void ACharacterBase::Shoot()
 		float DamageValue = BoneDamage[HitInfo.BoneName];
 		DamageInterface->TakeDamage(WeaponDamage * DamageValue);	
 	}
-}
-
-void ACharacterBase::ToggleLight()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Enter"));
-
-	//Casteo a FlashLight y llamado de función ToggleLight
-	AFlashlightBase* FlashlightInstance = Cast<AFlashlightBase>(UGameplayStatics::GetActorOfClass(this, AFlashlightBase::StaticClass()));
-	if (FlashlightInstance)
-		FlashlightInstance->ToggleFlashlight();
-	else
-		UE_LOG(LogTemp, Warning, TEXT("Failed"));
 }
 
 // Struct que se encarga de generar el rayo del arma
@@ -115,22 +137,43 @@ FHitResult ACharacterBase::WeaponTrace() const
 	return ImpactInfo;
 }
 
-void ACharacterBase::MoveRight(float Val)
+// Prende / Apaga linterna
+void ACharacterBase::ToggleLight()
 {
-	if (Val != 0.0f)
-	{
-		// Add movement in that direction
-		AddMovementInput(GetActorRightVector(), Val);
-	}
+	bIsLightOn = !bIsLightOn;
+	FlashLight->SetVisibility(bIsLightOn);
 }
 
-void ACharacterBase::MoveForward(float Val)
+// Cambia color de la luz
+void ACharacterBase::ChangeColorOfLight()
 {
-	if (Val != 0.0f)
+	if (bIsLightOn == true)
+		FlashLight->SetLightColor(FColor::MakeRandomColor());
+}
+
+// Cambio de intensidad de luz
+void ACharacterBase::ChangeIntensityOfLight()
+{
+	if (bIsLightOn == true)
+		FlashLight->SetIntensity(GetIntensityValue());
+}
+// Struct que devuelve el valor de intensidad
+float ACharacterBase::GetIntensityValue()
+{
+	if (iteration == 0)
 	{
-		// Add movement in that direction
-		AddMovementInput(GetActorForwardVector(), Val);
+		float NewIntensity = FlashLight->Intensity * 2;
+		iteration = 1;
+		return NewIntensity;
 	}
+	else if (iteration == 1)
+	{
+		float NewIntensity = FlashLight->Intensity / 2;
+		iteration = 0;
+		return NewIntensity;
+	}
+	else
+		return 0.0f;
 }
 
 
