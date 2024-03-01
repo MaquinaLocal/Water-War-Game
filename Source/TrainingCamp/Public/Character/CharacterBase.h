@@ -28,6 +28,10 @@ class TRAININGCAMP_API ACharacterBase : public ACharacter
 	/** Componente de escena para la posición del line trace */
 	UPROPERTY(VisibleAnywhere, Category = Mesh)
 	USceneComponent* FireLocation;
+
+	/** Luz puntual que representa una linterna */
+	UPROPERTY(VisibleAnywhere, Category = Mesh)
+	class USpotLightComponent* FlashLight;
 	
 public:
 	// Sets default values for this character's properties
@@ -64,8 +68,22 @@ protected:
 	/** Disparo de arma principal */
 	void Shoot();
 
+	//Variable para el estado de la luz
+	bool bIsLightOn;
+
 	/** Prendido y apagado de la linterna */
 	void ToggleLight();
+
+	/** Cambio del color de la linterna */
+	void ChangeColorOfLight();
+
+	/** Cambia Intensidad de luz */
+	void ChangeIntensityOfLight();
+
+	/** struct para obtener la intensidad de luz */
+	float GetIntensityValue();
+	int iteration;
+
 
 	/** Struct para el disparo del rayo */
 	FHitResult WeaponTrace() const;
