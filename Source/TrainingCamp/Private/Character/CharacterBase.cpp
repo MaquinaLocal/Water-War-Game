@@ -5,7 +5,8 @@
 #include "Components/CapsuleComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Damageable.h"
-#include "Items/LanternBase.h"
+#include "FlashlightBase.h"
+#include "Kismet/GameplayStatics.h"
 
 #define COLLISION_WEAPON		ECC_GameTraceChannel1
 
@@ -87,10 +88,10 @@ void ACharacterBase::ToggleLight()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Enter"));
 
-	ULanternBase* LightComponent = this->FindComponentByClass<ULanternBase>();
-	
-	if (LightComponent)
-		LightComponent->ToggleLight();
+	//Casteo a FlashLight y llamado de función ToggleLight
+	AFlashlightBase* FlashlightInstance = Cast<AFlashlightBase>(UGameplayStatics::GetActorOfClass(this, AFlashlightBase::StaticClass()));
+	if (FlashlightInstance)
+		FlashlightInstance->ToggleFlashlight();
 	else
 		UE_LOG(LogTemp, Warning, TEXT("Failed"));
 }
