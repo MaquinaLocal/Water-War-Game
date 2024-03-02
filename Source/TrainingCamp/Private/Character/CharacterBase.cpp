@@ -49,7 +49,7 @@ ACharacterBase::ACharacterBase()
 	WeaponDamage = 500.0f;
 
 	//Valores por defecto flashlight
-	FlashLight->SetRelativeLocation(FVector(70.0f,20.0f,140.0f));
+	FlashLight->SetRelativeLocation(FVector(90.0f,0,0));
 	FlashLight->SetRelativeRotation(FRotator::ZeroRotator);
 	FlashLight->Intensity = 5000.0f;
 	FlashLight->LightColor = FColor::White;
