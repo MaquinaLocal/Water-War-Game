@@ -23,6 +23,11 @@ public:
 	float DamageTaken;
 
 protected:
+	//Creación del timer para el sistema de estadísticas
+	FTimerHandle ChangeDmgValueTimer;
+	float TimerDelay = 0.2f;
+	void RestoreValue();
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
