@@ -2,6 +2,9 @@
 
 
 #include "Enemy/EnemyBase.h"
+#include "TimerManager.h"
+
+
 ///////////////////////////////////////////////////////////////
 // Sets default values
 AEnemyBase::AEnemyBase()
@@ -12,6 +15,7 @@ AEnemyBase::AEnemyBase()
 	// Vida inicial del enemigo
 	EnemyHP = 1000.f;
 }
+
 
 // Called when the game starts or when spawned
 void AEnemyBase::BeginPlay()
@@ -44,5 +48,12 @@ void AEnemyBase::TakeDamage(float Dmg)
 	EnemyHP -= Dmg;
 	//if (EnemyHP <= 0)
 		//Destroy();
+
+	// Implementación del timer, luego del tiempo establecido cambia el valor DamageTaken a cero
+	GetWorld()->GetTimerManager().SetTimer(ChangeDmgValueTimer, this, &AEnemyBase::RestoreValue, TimerDelay, true);
+}
+
+void AEnemyBase::RestoreValue()
+{
 	DamageTaken = 0;
 }
