@@ -19,7 +19,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Stats")
 	float EnemyHP;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	float DamageTaken;
 
 protected:

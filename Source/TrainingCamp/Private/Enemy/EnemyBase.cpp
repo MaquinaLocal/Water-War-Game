@@ -44,4 +44,5 @@ void AEnemyBase::TakeDamage(float Dmg)
 	EnemyHP -= Dmg;
 	//if (EnemyHP <= 0)
 		//Destroy();
+	DamageTaken = 0;
 }

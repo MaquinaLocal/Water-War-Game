@@ -148,7 +148,7 @@ void ACharacterBase::ToggleLight()
 void ACharacterBase::ChangeColorOfLight()
 {
 	if (bIsLightOn == true)
-		FlashLight->SetLightColor(FColor::MakeRandomColor());
+		FlashLight->SetLightColor(FColor::Red);
 }
 
 // Cambio de intensidad de luz

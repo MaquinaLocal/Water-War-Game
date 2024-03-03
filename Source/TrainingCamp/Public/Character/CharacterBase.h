@@ -30,7 +30,7 @@ class TRAININGCAMP_API ACharacterBase : public ACharacter
 	USceneComponent* FireLocation;
 
 	/** Luz puntual que representa una linterna */
-	UPROPERTY(VisibleAnywhere, Category = Mesh)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpotLightComponent* FlashLight;
 	
 public:
