@@ -50,7 +50,7 @@ public:
 	float WeaponRange;
 
 	/** Daño de arma del player */
-	UPROPERTY(EditAnywhere, Category = "Weapon")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
 	float WeaponDamage;
 
 	/** Mapa de daño por zonas, editable desde BP */
@@ -64,6 +64,13 @@ public:
 	/** Armadura de Jugador */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player Stats")
 	float PlayerArmor;
+
+	/** Velocidad del jugador */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player Stats")
+	float PlayerSpeed;
+
+	/** Actualizar la velocidad de movimiento */
+	void ChangeMovementSpeed(float Value);
 
 protected:
 	

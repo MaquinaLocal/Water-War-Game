@@ -12,16 +12,18 @@ class TRAININGCAMP_API AItemClassBase : public AActor
 	GENERATED_BODY()
 	
 	/** Capsula de colisión para interacciones */
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+	UPROPERTY(VisibleDefaultsOnly, Category = "Mesh")
 	class UCapsuleComponent* CollisionCapsule;
 	
-	/** Mesh principal del ítem */
-	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-	class UStaticMeshComponent* ItemMesh;
 
 public:	
 	// Sets default values for this actor's properties
 	AItemClassBase();
+
+	/** Mesh principal del ítem */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
+	class UStaticMeshComponent* ItemMesh;
+
 
 protected:
 	// Called when the game starts or when spawned
