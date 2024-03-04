@@ -23,7 +23,6 @@ AItemClassBase::AItemClassBase()
 	//Skeletal Mesh
 	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ItemMesh"));
 	ItemMesh->SetupAttachment(RootComponent);
-
 }
 
 
@@ -61,6 +60,19 @@ void AItemClassBase::NotifyActorBeginOverlap(AActor* OtherActor)
 			float UpdateArmor = ItemList["GetArmor"];
 			float CurrentArmor = Player->PlayerArmor;
 			Player->PlayerArmor += (CurrentArmor * UpdateArmor);
+		}
+
+		if (ItemList.Contains("GetSpeed") && ItemList["GetSpeed"] > 0)
+		{
+			float UpdateSpeed = ItemList["GetSpeed"];
+			Player->ChangeMovementSpeed(UpdateSpeed);
+		}
+
+		if (ItemList.Contains("GetDamage") && ItemList["GetDamage"] > 0)
+		{
+			float UpdateDamage = ItemList["GetDamage"];
+			float CurrentDamage = Player->WeaponDamage;
+			Player->WeaponDamage += (CurrentDamage * UpdateDamage);
 		}
 	}
 }

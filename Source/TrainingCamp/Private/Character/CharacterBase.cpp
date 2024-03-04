@@ -6,6 +6,7 @@
 #include "DrawDebugHelpers.h"
 #include "Damageable.h"
 #include "Components/SpotLightComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 
 #define COLLISION_WEAPON		ECC_GameTraceChannel1
@@ -47,7 +48,8 @@ ACharacterBase::ACharacterBase()
 	//Valores por defecto Player
 	PlayerHP = 100.0f;
 	PlayerArmor = 100.0f;
-
+	PlayerSpeed = GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+	
 	//Valores por defecto arma
 	WeaponRange = 3000.0f;
 	WeaponDamage = 500.0f;
@@ -122,6 +124,7 @@ void ACharacterBase::Shoot()
 	}
 }
 
+
 // Struct que se encarga de generar el rayo del arma
 FHitResult ACharacterBase::WeaponTrace() const
 {
@@ -180,4 +183,9 @@ float ACharacterBase::GetIntensityValue()
 		return 0.0f;
 }
 
-
+//Actualizar velocidad de movimiento
+void ACharacterBase::ChangeMovementSpeed(float Value)
+{
+	float NewVelocity = PlayerSpeed + (PlayerSpeed * Value);
+	PlayerSpeed = GetCharacterMovement()->MaxWalkSpeed = NewVelocity;
+}
