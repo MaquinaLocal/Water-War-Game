@@ -57,6 +57,14 @@ public:
 	UPROPERTY(EditAnywhere)
 	TMap<FName, float> BoneDamage;
 
+	/** Vida de Jugador */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player Stats")
+	float PlayerHP;
+
+	/** Armadura de Jugador */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player Stats")
+	float PlayerArmor;
+
 protected:
 	
 	/** Movimiento lateral */
