@@ -44,6 +44,10 @@ ACharacterBase::ACharacterBase()
 	FlashLight = CreateDefaultSubobject<USpotLightComponent>(TEXT("FlashLight"));
 	FlashLight->SetupAttachment(FirstPersonCameraComponent);
 
+	//Valores por defecto Player
+	PlayerHP = 100.0f;
+	PlayerArmor = 100.0f;
+
 	//Valores por defecto arma
 	WeaponRange = 3000.0f;
 	WeaponDamage = 500.0f;
