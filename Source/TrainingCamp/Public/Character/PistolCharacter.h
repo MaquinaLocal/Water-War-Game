@@ -35,6 +35,19 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Impulse Force")
 	float ImpulseForce = 100.0f;
 
+	UPROPERTY(EditAnywhere, Category = "Damage Stats")
+	TMap<FName, float> BoneDamage;
+
+	UPROPERTY(EditAnywhere, Category = "Damage Stats")
+	float WeaponDamage = 500.0f;
+
+	int8 CurrentAmmo = 1;
+
+	FHitResult ShootingTrace() const;
+	float TraceRange = 5000.0f;
+
+
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -44,5 +57,6 @@ public:
 
 	void LookUp(float Val);
 	void TurnRight(float Val);
-	void CannonBall();
+	void PistolShoot();
+	void ToggleAmmo();
 };
