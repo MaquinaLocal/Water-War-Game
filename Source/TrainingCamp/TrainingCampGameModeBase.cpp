@@ -7,7 +7,7 @@
 
 ATrainingCampGameModeBase::ATrainingCampGameModeBase()
 {
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/BPs/BP_PistolCharacter"));
+	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/BPs/Character/BP_PistolCharacter"));
 	DefaultPawnClass = PlayerPawnClassFinder.Class;
 
 	PlayerControllerClass = AFirstPersonPC::StaticClass();

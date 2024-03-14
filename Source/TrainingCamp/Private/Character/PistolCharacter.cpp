@@ -7,7 +7,10 @@
 #include "Engine/World.h"
 #include "Character/ProjectileBase.h"
 #include "Components/PrimitiveComponent.h"
+#include "DrawDebugHelpers.h"
+#include "Damageable.h"
 
+#define COLLISION_WEAPON		ECC_GameTraceChannel1
 // Sets default values
 APistolCharacter::APistolCharacter()
 {
@@ -37,6 +40,7 @@ void APistolCharacter::BeginPlay()
 	
 }
 
+
 // Called every frame
 void APistolCharacter::Tick(float DeltaTime)
 {
@@ -52,7 +56,8 @@ void APistolCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("LookUp", this, &APistolCharacter::LookUp);
 	PlayerInputComponent->BindAxis("Turn", this, &APistolCharacter::TurnRight);
 
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APistolCharacter::CannonBall);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APistolCharacter::PistolShoot);
+	PlayerInputComponent->BindAction("ToggleAmmo", IE_Pressed, this, &APistolCharacter::ToggleAmmo);
 }
 
 void APistolCharacter::LookUp(float Val)
@@ -73,21 +78,60 @@ void APistolCharacter::TurnRight(float Val)
 	}
 }
 
-void APistolCharacter::CannonBall()
+void APistolCharacter::ToggleAmmo()
 {
-	FVector SpawnLocation = FireLocation->GetComponentLocation();
-	FRotator SpawnRotation = PistolMesh->GetComponentRotation();
-	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(BPtoSpawn.Get(), SpawnLocation, SpawnRotation);
+	if (CurrentAmmo == 1)
+		CurrentAmmo = 2;
+	else
+		CurrentAmmo = 1;
+}
 
-	if (SpawnedActor)
+void APistolCharacter::PistolShoot()
+{
+	if (CurrentAmmo == 2)
 	{
-		UStaticMeshComponent* MeshComponent = Cast<UStaticMeshComponent>(SpawnedActor->GetRootComponent());
-		if (MeshComponent)
-		{
-			FVector Forward = PistolMesh->GetForwardVector();
+		FVector SpawnLocation = FireLocation->GetComponentLocation();
+		FRotator SpawnRotation = PistolMesh->GetComponentRotation();
+		AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(BPtoSpawn.Get(), SpawnLocation, SpawnRotation);
 
-			MeshComponent->SetPhysicsLinearVelocity(-Forward * ImpulseForce * MeshComponent->GetMass());
+		if (SpawnedActor)
+		{
+			UStaticMeshComponent* MeshComponent = Cast<UStaticMeshComponent>(SpawnedActor->GetRootComponent());
+			if (MeshComponent)
+			{
+				FVector Forward = PistolMesh->GetForwardVector();
+
+				MeshComponent->SetPhysicsLinearVelocity(-Forward * ImpulseForce * MeshComponent->GetMass());
+			}
 		}
+	}
+
+	if (CurrentAmmo == 1)
+	{
+		FHitResult Hit = ShootingTrace();
+
+		IDamageable* DamageInterface = Cast<IDamageable>(Hit.Actor);
+		if (DamageInterface && BoneDamage.Contains(Hit.BoneName))
+		{
+			float DamageValue = BoneDamage[Hit.BoneName];
+			DamageInterface->TakeDamage(WeaponDamage * DamageValue);
+		}
+		else if (DamageInterface)
+			DamageInterface->TakeDamage(WeaponDamage);
 	}
 }
 
+
+FHitResult APistolCharacter::ShootingTrace() const
+{
+	FHitResult HitInfo;
+	FVector LineStart = PistolMesh->GetComponentLocation();
+	FVector Forward = PistolMesh->GetForwardVector();
+	FVector LineEnd = LineStart + -Forward * TraceRange;
+
+	GetWorld()->LineTraceSingleByChannel(HitInfo, LineStart, LineEnd, COLLISION_WEAPON);
+
+	DrawDebugLine(GetWorld(), LineStart, LineEnd, FColor::Red, false, 1.0f);
+
+	return HitInfo;
+}
