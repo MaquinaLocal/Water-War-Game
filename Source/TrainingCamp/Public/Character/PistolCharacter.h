@@ -32,6 +32,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile")
 	TSubclassOf<AActor> BPtoSpawn;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Impulse Force")
+	float ImpulseForce = 100.0f;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

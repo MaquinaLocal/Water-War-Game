@@ -59,8 +59,7 @@ void APistolCharacter::LookUp(float Val)
 {
 	if (Val != 0.0f)
 	{
-		Val = -Val;
-		FRotator NewRotation(0.0f, 0.0f, Val);
+		FRotator NewRotation(Val, 0.0f, 0.0f);
 		PistolMesh->AddRelativeRotation(NewRotation);
 	}
 }
@@ -76,14 +75,18 @@ void APistolCharacter::TurnRight(float Val)
 
 void APistolCharacter::CannonBall()
 {
-	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(BPtoSpawn.Get(), GetActorLocation(), GetActorRotation());
+	FVector SpawnLocation = FireLocation->GetComponentLocation();
+	FRotator SpawnRotation = PistolMesh->GetComponentRotation();
+	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(BPtoSpawn.Get(), SpawnLocation, SpawnRotation);
+
 	if (SpawnedActor)
 	{
-		UPrimitiveComponent* SpawnedRoot = Cast<UPrimitiveComponent>(SpawnedActor->GetRootComponent());
-		if (SpawnedRoot)
+		UStaticMeshComponent* MeshComponent = Cast<UStaticMeshComponent>(SpawnedActor->GetRootComponent());
+		if (MeshComponent)
 		{
-			FVector Impulse = FVector(0.0f, 0.0f, 0.0f);
-			SpawnedRoot->AddImpulse(Impulse, NAME_None, true);
+			FVector Forward = PistolMesh->GetForwardVector();
+
+			MeshComponent->SetPhysicsLinearVelocity(-Forward * ImpulseForce * MeshComponent->GetMass());
 		}
 	}
 }
