@@ -5,7 +5,6 @@
 #include "Components/CapsuleComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Damageable.h"
-#include "Components/SpotLightComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 
@@ -23,27 +22,11 @@ ACharacterBase::ACharacterBase()
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera)"));
 	FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(0, 0, 64.f));
-	FirstPersonCameraComponent->bUsePawnControlRotation = true;
-
-	/** Creación de Mesh de Jugador */
-	FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
-	FirstPersonMesh->SetupAttachment(FirstPersonCameraComponent);
-	FirstPersonMesh->bCastDynamicShadow = false;
-	FirstPersonMesh->CastShadow = false;
-
-	/** Creación de Mesh de Arma */
-	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
-	WeaponMesh->bCastDynamicShadow = false;
-	WeaponMesh->CastShadow = false;
-	WeaponMesh->SetupAttachment(FirstPersonMesh, TEXT("GripPoint"));
 
 	/** Creación del componente de escena */
 	FireLocation = CreateDefaultSubobject<USceneComponent>(TEXT("FireLocation"));
-	FireLocation->SetupAttachment(FirstPersonMesh, TEXT("GripPoint"));
+	FireLocation->SetupAttachment(FirstPersonCameraComponent);
 
-	/** Luz puntual */
-	FlashLight = CreateDefaultSubobject<USpotLightComponent>(TEXT("FlashLight"));
-	FlashLight->SetupAttachment(FirstPersonCameraComponent);
 
 	//Valores por defecto Player
 	PlayerHP = 100.0f;
@@ -54,14 +37,6 @@ ACharacterBase::ACharacterBase()
 	WeaponRange = 3000.0f;
 	WeaponDamage = 500.0f;
 
-	//Valores por defecto flashlight
-	FlashLight->SetRelativeLocation(FVector(90.0f,0,0));
-	FlashLight->SetRelativeRotation(FRotator::ZeroRotator);
-	FlashLight->Intensity = 5000.0f;
-	FlashLight->LightColor = FColor::White;
-	bIsLightOn = false;
-	FlashLight->SetVisibility(bIsLightOn);
-	iteration = 0;
 }
 
 /////////////////////////////////////////////////////////////
@@ -73,27 +48,23 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	// Salto
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	//PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	//PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	// Disparo
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ACharacterBase::Shoot);
 
 	// Movimientos de personaje
-	PlayerInputComponent->BindAxis("MoveForward", this, &ACharacterBase::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &ACharacterBase::MoveRight);
+	//PlayerInputComponent->BindAxis("MoveForward", this, &ACharacterBase::MoveForward);
+	//PlayerInputComponent->BindAxis("MoveRight", this, &ACharacterBase::MoveRight);
 
 	// Rotación de cámara
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	//PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+	//PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
-	// Uso de linterna
-	PlayerInputComponent->BindAction("Flashlight", IE_Pressed, this, &ACharacterBase::ToggleLight);
-	PlayerInputComponent->BindAction("LightColor", IE_Pressed, this, &ACharacterBase::ChangeColorOfLight);
-	PlayerInputComponent->BindAction("LightIntensity", IE_Pressed, this, &ACharacterBase::ChangeIntensityOfLight);
 }
 
-void ACharacterBase::MoveRight(float Val)
+/*void ACharacterBase::MoveRight(float Val)
 {
 	if (Val != 0.0f)
 	{
@@ -101,8 +72,9 @@ void ACharacterBase::MoveRight(float Val)
 		AddMovementInput(GetActorRightVector(), Val);
 	}
 }
+*/
 
-void ACharacterBase::MoveForward(float Val)
+/*void ACharacterBase::MoveForward(float Val)
 {
 	if (Val != 0.0f)
 	{
@@ -110,9 +82,11 @@ void ACharacterBase::MoveForward(float Val)
 		AddMovementInput(GetActorForwardVector(), Val);
 	}
 }
+*/
 
 void ACharacterBase::Shoot()
 {
+	
 	FHitResult HitInfo = WeaponTrace();
 
 	// Casteo a la interfaz de daño para enemigos y daño según zona de cuerpo
@@ -139,48 +113,9 @@ FHitResult ACharacterBase::WeaponTrace() const
 	GetWorld()->LineTraceSingleByChannel(ImpactInfo, LineOrigin, LineEnd, COLLISION_WEAPON);
 
 	//Dibujado de linea desde inicio hasta final del rayo
-	DrawDebugLine(GetWorld(), LineOrigin, LineEnd, FColor::Green, false, 3);
-
+	DrawDebugLine(GetWorld(), LineOrigin, LineEnd, FColor::Red, false, 3);
+	UE_LOG(LogTemp, Warning, TEXT("Shot"));
 	return ImpactInfo;
-}
-
-// Prende / Apaga linterna
-void ACharacterBase::ToggleLight()
-{
-	bIsLightOn = !bIsLightOn;
-	FlashLight->SetVisibility(bIsLightOn);
-}
-
-// Cambia color de la luz
-void ACharacterBase::ChangeColorOfLight()
-{
-	if (bIsLightOn == true)
-		FlashLight->SetLightColor(FColor::Red);
-}
-
-// Cambio de intensidad de luz
-void ACharacterBase::ChangeIntensityOfLight()
-{
-	if (bIsLightOn == true)
-		FlashLight->SetIntensity(GetIntensityValue());
-}
-// Struct que devuelve el valor de intensidad
-float ACharacterBase::GetIntensityValue()
-{
-	if (iteration == 0)
-	{
-		float NewIntensity = FlashLight->Intensity * 2;
-		iteration = 1;
-		return NewIntensity;
-	}
-	else if (iteration == 1)
-	{
-		float NewIntensity = FlashLight->Intensity / 2;
-		iteration = 0;
-		return NewIntensity;
-	}
-	else
-		return 0.0f;
 }
 
 //Actualizar velocidad de movimiento
