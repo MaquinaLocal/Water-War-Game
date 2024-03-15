@@ -25,9 +25,14 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Mesh)
 	USceneComponent* FireLocation;
 
+	UPROPERTY(VisibleAnywhere, Category = Mesh)
+	UStaticMeshComponent* AimingHelper;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	void UpdateReticleByRayTrace();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile")
 	TSubclassOf<AActor> BPtoSpawn;
@@ -40,6 +45,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Damage Stats")
 	float WeaponDamage = 500.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun Stats")
+	float GunWaterLevel = 100.0f;
+	bool bCanShoot = true;
+	void CheckWaterLevel();
+	void RechargeWaterLevel();
 
 	int8 CurrentAmmo = 1;
 
