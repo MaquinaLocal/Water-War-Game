@@ -29,6 +29,8 @@ APistolCharacter::APistolCharacter()
 	FireLocation = CreateDefaultSubobject<USceneComponent>(TEXT("FireLocation"));
 	FireLocation->SetupAttachment(PistolCameraComponent);
 
+	AimingHelper = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Aim"));
+	AimingHelper->SetupAttachment(GetRootComponent());
 
 
 }
@@ -41,11 +43,31 @@ void APistolCharacter::BeginPlay()
 }
 
 
+
 // Called every frame
 void APistolCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	UpdateReticleByRayTrace();
+
+}
+
+void APistolCharacter::UpdateReticleByRayTrace()
+{
+	FVector LineStart = PistolMesh->GetComponentLocation();
+	FVector Rotation = PistolMesh->GetForwardVector();
+	FVector LineEnd = LineStart + -Rotation * TraceRange;
+
+	FHitResult HitResult;
+
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, LineStart, LineEnd, ECC_Visibility))
+	{
+		AimingHelper->SetWorldLocation(HitResult.ImpactPoint);
+
+		FRotator SurfaceRotation = HitResult.ImpactNormal.Rotation();
+		AimingHelper->SetWorldRotation(SurfaceRotation);
+	}
 }
 
 // Called to bind functionality to input
@@ -64,7 +86,7 @@ void APistolCharacter::LookUp(float Val)
 {
 	if (Val != 0.0f)
 	{
-		FRotator NewRotation(Val, 0.0f, 0.0f);
+		FRotator NewRotation(Val*1.5, 0.0f, 0.0f);
 		PistolMesh->AddRelativeRotation(NewRotation);
 	}
 }
@@ -73,7 +95,7 @@ void APistolCharacter::TurnRight(float Val)
 {
 	if (Val != 0.0f)
 	{
-		FRotator NewRotation(0.0f, Val, 0.0f);
+		FRotator NewRotation(0.0f, Val*2, 0.0f);
 		PistolMesh->AddRelativeRotation(NewRotation);
 	}
 }
@@ -88,7 +110,7 @@ void APistolCharacter::ToggleAmmo()
 
 void APistolCharacter::PistolShoot()
 {
-	if (CurrentAmmo == 2)
+	if (CurrentAmmo == 2 && GunWaterLevel >= 50.0f && bCanShoot == true)
 	{
 		FVector SpawnLocation = FireLocation->GetComponentLocation();
 		FRotator SpawnRotation = PistolMesh->GetComponentRotation();
@@ -102,11 +124,14 @@ void APistolCharacter::PistolShoot()
 				FVector Forward = PistolMesh->GetForwardVector();
 
 				MeshComponent->SetPhysicsLinearVelocity(-Forward * ImpulseForce * MeshComponent->GetMass());
+
+				GunWaterLevel -= 50.0f;
+				CheckWaterLevel();
 			}
 		}
 	}
 
-	if (CurrentAmmo == 1)
+	if (CurrentAmmo == 1 && GunWaterLevel >= 10.0f && bCanShoot == true)
 	{
 		FHitResult Hit = ShootingTrace();
 
@@ -118,9 +143,25 @@ void APistolCharacter::PistolShoot()
 		}
 		else if (DamageInterface)
 			DamageInterface->TakeDamage(WeaponDamage);
+
+		GunWaterLevel -= 10.0f;
+		CheckWaterLevel();
 	}
 }
 
+
+void APistolCharacter::CheckWaterLevel()
+{
+	if (GunWaterLevel <= 0.0f)
+		bCanShoot = false;
+	else
+		bCanShoot = true;
+}
+
+void APistolCharacter::RechargeWaterLevel()
+{
+
+}
 
 FHitResult APistolCharacter::ShootingTrace() const
 {
