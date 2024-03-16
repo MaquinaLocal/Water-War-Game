@@ -9,6 +9,7 @@
 #include "Components/PrimitiveComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Damageable.h"
+#include "AffectPlayer.h"
 
 #define COLLISION_WEAPON		ECC_GameTraceChannel1
 // Sets default values
@@ -110,7 +111,10 @@ void APistolCharacter::ToggleAmmo()
 
 void APistolCharacter::PistolShoot()
 {
-	if (CurrentAmmo == 2 && GunWaterLevel >= 50.0f && bCanShoot == true)
+	float PowerShot = 25.0f;
+	float RegularShot = 10.0f;
+
+	if (CurrentAmmo == 2 && GunWaterLevel >= PowerShot && bCanShoot == true)
 	{
 		FVector SpawnLocation = FireLocation->GetComponentLocation();
 		FRotator SpawnRotation = PistolMesh->GetComponentRotation();
@@ -125,13 +129,13 @@ void APistolCharacter::PistolShoot()
 
 				MeshComponent->SetPhysicsLinearVelocity(-Forward * ImpulseForce * MeshComponent->GetMass());
 
-				GunWaterLevel -= 50.0f;
+				GunWaterLevel -= PowerShot;
 				CheckWaterLevel();
 			}
 		}
 	}
 
-	if (CurrentAmmo == 1 && GunWaterLevel >= 10.0f && bCanShoot == true)
+	if (CurrentAmmo == 1 && GunWaterLevel >= RegularShot && bCanShoot == true)
 	{
 		FHitResult Hit = ShootingTrace();
 
@@ -144,8 +148,13 @@ void APistolCharacter::PistolShoot()
 		else if (DamageInterface)
 			DamageInterface->TakeDamage(WeaponDamage);
 
-		GunWaterLevel -= 10.0f;
+		GunWaterLevel -= RegularShot;
 		CheckWaterLevel();
+
+		IAffectPlayer* WaterInterface = Cast<IAffectPlayer>(Hit.Actor);
+		if (WaterInterface)
+			WaterInterface->GetPlayerWaterRefill(this);
+
 	}
 }
 
@@ -160,7 +169,7 @@ void APistolCharacter::CheckWaterLevel()
 
 void APistolCharacter::RechargeWaterLevel()
 {
-
+	GunWaterLevel = MaxWaterLevel;
 }
 
 FHitResult APistolCharacter::ShootingTrace() const

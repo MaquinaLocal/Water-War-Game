@@ -48,9 +48,10 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun Stats")
 	float GunWaterLevel = 100.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun Stats")
+	float MaxWaterLevel = 100.0f;
+
 	bool bCanShoot = true;
-	void CheckWaterLevel();
-	void RechargeWaterLevel();
 
 	int8 CurrentAmmo = 1;
 
@@ -70,4 +71,7 @@ public:
 	void TurnRight(float Val);
 	void PistolShoot();
 	void ToggleAmmo();
+
+	void RechargeWaterLevel();
+	void CheckWaterLevel();
 };
