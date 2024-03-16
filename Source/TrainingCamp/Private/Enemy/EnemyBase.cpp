@@ -30,6 +30,20 @@ void AEnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (GetVelocity().Size() > 0)
+	{
+		isMoving = true;
+		OrientRotationToMovement();
+	}
+	else
+		isMoving = false;
+}
+
+void AEnemyBase::OrientRotationToMovement()
+{
+	FRotator NewRotation = GetVelocity().Rotation();
+
+	SetActorRotation(NewRotation);
 }
 
 ///////////////////////////////////////////////////////////////
@@ -53,6 +67,7 @@ void AEnemyBase::TakeDamage(float Dmg)
 	// Implementación del timer, luego del tiempo establecido cambia el valor DamageTaken a cero
 	GetWorld()->GetTimerManager().SetTimer(ChangeDmgValueTimer, this, &AEnemyBase::RestoreValue, TimerDelay, true);
 }
+
 
 void AEnemyBase::RestoreValue()
 {

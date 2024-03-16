@@ -22,6 +22,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	float DamageTaken;
 
+	UPROPERTY(EditAnywhere)
+	TArray<AActor*> WayPoints;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool isMoving;
+
 protected:
 	//Creación del timer para el sistema de estadísticas
 	FTimerHandle ChangeDmgValueTimer;
@@ -32,6 +38,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	void TakeDamage(float Dmg) override;
+
+	void OrientRotationToMovement();
 
 public:	
 	// Called every frame
