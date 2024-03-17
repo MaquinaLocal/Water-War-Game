@@ -3,14 +3,24 @@
 
 #include "Enemy/EnemyBase.h"
 #include "TimerManager.h"
+#include "DrawDebugHelpers.h"
 
-
+#define COLLISION		ECC_GameTraceChannel3
 ///////////////////////////////////////////////////////////////
 // Sets default values
 AEnemyBase::AEnemyBase()
 {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
+	CapsuleComponent->SetupAttachment(GetRootComponent());
+
+	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
+	SkeletalMesh->SetupAttachment(CapsuleComponent);
+
+	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
+	WeaponMesh->SetupAttachment(SkeletalMesh, TEXT("RightHandWeapon"));
 
 	// Vida inicial del enemigo
 	EnemyHP = 1000.f;
@@ -44,6 +54,18 @@ void AEnemyBase::OrientRotationToMovement()
 	FRotator NewRotation = GetVelocity().Rotation();
 
 	SetActorRotation(NewRotation);
+}
+
+void AEnemyBase::ShootPlayer()
+{
+	FHitResult HitInfo;
+	FVector LineStart = WeaponMesh->GetComponentLocation();
+	FVector Forward = WeaponMesh->GetForwardVector();
+	FVector LineEnd = LineStart + Forward * TraceRange;
+
+	GetWorld()->LineTraceSingleByChannel(HitInfo, LineStart, LineEnd, COLLISION);
+	DrawDebugLine(GetWorld(), LineStart, LineEnd, FColor::Orange, false, 1.0f);
+
 }
 
 ///////////////////////////////////////////////////////////////
