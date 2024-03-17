@@ -38,18 +38,21 @@ protected:
 	TSubclassOf<AActor> BPtoSpawn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Impulse Force")
-	float ImpulseForce = 100.0f;
+	float ImpulseForce = 500.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Damage Stats")
 	TMap<FName, float> BoneDamage;
 
 	UPROPERTY(EditAnywhere, Category = "Damage Stats")
-	float WeaponDamage = 500.0f;
+	float WeaponDamage = 1.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun Stats")
 	float GunWaterLevel = 100.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun Stats")
 	float MaxWaterLevel = 100.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Win Condition")
+	float PlayerPoints = 10.0f;
 
 	bool bCanShoot = true;
 

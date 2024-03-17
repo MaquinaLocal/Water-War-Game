@@ -17,9 +17,9 @@ void AAIControllerBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MoveControlledPawnToLocation();
+	//MoveControlledPawnToLocation();
 
-	GetWorld()->GetTimerManager().SetTimer(WayPointTimer, this, &AAIControllerBase::MoveToNextWayPoint, TimerDelay, true);
+	//GetWorld()->GetTimerManager().SetTimer(WayPointTimer, this, &AAIControllerBase::MoveToNextWayPoint, TimerDelay, true);
 }
 
 

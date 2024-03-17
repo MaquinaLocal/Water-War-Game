@@ -71,6 +71,7 @@ void APistolCharacter::UpdateReticleByRayTrace()
 	}
 }
 
+
 // Called to bind functionality to input
 void APistolCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {

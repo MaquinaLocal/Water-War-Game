@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Damageable.h"
 #include "GameFramework/Pawn.h"
+#include "Components/CapsuleComponent.h"
 #include "EnemyBase.generated.h"
 
 UCLASS()
@@ -15,6 +16,15 @@ class TRAININGCAMP_API AEnemyBase : public APawn, public IDamageable
 public:
 	// Sets default values for this pawn's properties
 	AEnemyBase();
+
+	UPROPERTY(VisibleDefaultsOnly)
+	UCapsuleComponent* CapsuleComponent;
+
+	UPROPERTY(EditAnywhere)
+	USkeletalMeshComponent* SkeletalMesh;
+
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* WeaponMesh;
 
 	UPROPERTY(EditAnywhere, Category = "Stats")
 	float EnemyHP;
@@ -28,6 +38,13 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	bool isMoving;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Win Condition")
+	float EnemyPoints = 10.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Win Condition")
+	float WeaponDamage = 1.0f;
+
+
 protected:
 	//Creación del timer para el sistema de estadísticas
 	FTimerHandle ChangeDmgValueTimer;
@@ -40,6 +57,11 @@ protected:
 	void TakeDamage(float Dmg) override;
 
 	void OrientRotationToMovement();
+
+	UFUNCTION(BlueprintCallable)
+	void ShootPlayer();
+
+	float TraceRange = 5000.0f;
 
 public:	
 	// Called every frame
