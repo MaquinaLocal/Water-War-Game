@@ -88,7 +88,7 @@ void APistolCharacter::LookUp(float Val)
 {
 	if (Val != 0.0f)
 	{
-		FRotator NewRotation(Val*1.5, 0.0f, 0.0f);
+		FRotator NewRotation(Val, 0.0f, 0.0f);
 		PistolMesh->AddRelativeRotation(NewRotation);
 	}
 }
@@ -97,7 +97,7 @@ void APistolCharacter::TurnRight(float Val)
 {
 	if (Val != 0.0f)
 	{
-		FRotator NewRotation(0.0f, Val*2, 0.0f);
+		FRotator NewRotation(0.0f, Val, 0.0f);
 		PistolMesh->AddRelativeRotation(NewRotation);
 	}
 }
@@ -171,6 +171,7 @@ void APistolCharacter::CheckWaterLevel()
 void APistolCharacter::RechargeWaterLevel()
 {
 	GunWaterLevel = MaxWaterLevel;
+	bCanShoot = true;
 }
 
 FHitResult APistolCharacter::ShootingTrace() const
@@ -185,4 +186,9 @@ FHitResult APistolCharacter::ShootingTrace() const
 	DrawDebugLine(GetWorld(), LineStart, LineEnd, FColor::Red, false, 1.0f);
 
 	return HitInfo;
+}
+
+void APistolCharacter::TakeDamage(float Dmg)
+{
+	PlayerPoints -= Dmg;
 }

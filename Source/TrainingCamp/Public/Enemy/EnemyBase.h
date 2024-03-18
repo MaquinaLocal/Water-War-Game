@@ -39,17 +39,19 @@ public:
 	bool isMoving;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Win Condition")
-	float EnemyPoints = 10.0f;
+	float EnemyPoints = 20.0f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Win Condition")
 	float WeaponDamage = 1.0f;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bGetHit = false;
 
 protected:
 	//Creación del timer para el sistema de estadísticas
-	FTimerHandle ChangeDmgValueTimer;
-	float TimerDelay = 0.2f;
-	void RestoreValue();
+	FTimerHandle TimerHandle;
+	float TimerDelay = 2.0f;
+	void SetHitToFalse();
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

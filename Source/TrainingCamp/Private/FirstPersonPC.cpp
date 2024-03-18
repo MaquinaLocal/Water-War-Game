@@ -5,5 +5,5 @@
 
 AFirstPersonPC::AFirstPersonPC()
 {
-	bShowMouseCursor = true;
+	bShowMouseCursor = false;
 }
