@@ -52,7 +52,7 @@ protected:
 	float MaxWaterLevel = 100.0f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Win Condition")
-	float PlayerPoints = 10.0f;
+	float PlayerPoints = 20.0f;
 
 	bool bCanShoot = true;
 
@@ -77,4 +77,5 @@ public:
 
 	void RechargeWaterLevel();
 	void CheckWaterLevel();
+	void TakeDamage(float Dmg);
 };

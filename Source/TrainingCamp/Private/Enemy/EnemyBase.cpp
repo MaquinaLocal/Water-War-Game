@@ -4,6 +4,7 @@
 #include "Enemy/EnemyBase.h"
 #include "TimerManager.h"
 #include "DrawDebugHelpers.h"
+#include "Character/PistolCharacter.h"
 
 #define COLLISION		ECC_GameTraceChannel3
 ///////////////////////////////////////////////////////////////
@@ -25,6 +26,7 @@ AEnemyBase::AEnemyBase()
 	// Vida inicial del enemigo
 	EnemyHP = 1000.f;
 }
+
 
 
 // Called when the game starts or when spawned
@@ -58,13 +60,22 @@ void AEnemyBase::OrientRotationToMovement()
 
 void AEnemyBase::ShootPlayer()
 {
-	FHitResult HitInfo;
-	FVector LineStart = WeaponMesh->GetComponentLocation();
-	FVector Forward = GetActorForwardVector();
-	FVector LineEnd = LineStart + Forward * TraceRange;
+	if (bGetHit == false)
+	{
+		FHitResult HitInfo;
+		FVector LineStart = WeaponMesh->GetComponentLocation();
+		FVector Forward = GetActorForwardVector();
+		FVector LineEnd = LineStart + Forward * TraceRange;
 
-	GetWorld()->LineTraceSingleByChannel(HitInfo, LineStart, LineEnd, COLLISION);
-	DrawDebugLine(GetWorld(), LineStart, LineEnd, FColor::Orange, false, 1.0f);
+		GetWorld()->LineTraceSingleByChannel(HitInfo, LineStart, LineEnd, COLLISION);
+		DrawDebugLine(GetWorld(), LineStart, LineEnd, FColor::Orange, false, 1.0f);
+
+		APistolCharacter* PlayerRef = Cast<APistolCharacter>(HitInfo.Actor);
+		if (PlayerRef)
+		{
+			PlayerRef->TakeDamage(WeaponDamage);
+		}
+	}
 
 }
 
@@ -80,18 +91,13 @@ void AEnemyBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 // Daño que recibe el personaje
 void AEnemyBase::TakeDamage(float Dmg)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Enter"));
-	DamageTaken = Dmg;
-	EnemyHP -= Dmg;
-	//if (EnemyHP <= 0)
-		//Destroy();
-
-	// Implementación del timer, luego del tiempo establecido cambia el valor DamageTaken a cero
-	GetWorld()->GetTimerManager().SetTimer(ChangeDmgValueTimer, this, &AEnemyBase::RestoreValue, TimerDelay, true);
+	bGetHit = true;
+	EnemyPoints -= Dmg;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AEnemyBase::SetHitToFalse, TimerDelay, false);
 }
 
 
-void AEnemyBase::RestoreValue()
+void AEnemyBase::SetHitToFalse()
 {
-	DamageTaken = 0;
+	bGetHit = false;
 }
