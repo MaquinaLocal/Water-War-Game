@@ -60,7 +60,7 @@ void AEnemyBase::ShootPlayer()
 {
 	FHitResult HitInfo;
 	FVector LineStart = WeaponMesh->GetComponentLocation();
-	FVector Forward = WeaponMesh->GetForwardVector();
+	FVector Forward = GetActorForwardVector();
 	FVector LineEnd = LineStart + Forward * TraceRange;
 
 	GetWorld()->LineTraceSingleByChannel(HitInfo, LineStart, LineEnd, COLLISION);
