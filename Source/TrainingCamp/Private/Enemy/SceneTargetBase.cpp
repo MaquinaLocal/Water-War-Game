@@ -3,6 +3,7 @@
 
 #include "Enemy/SceneTargetBase.h"
 #include "TimerManager.h"
+#include "AffectPlayer.h"
 
 // Sets default values
 ASceneTargetBase::ASceneTargetBase()
@@ -20,7 +21,7 @@ void ASceneTargetBase::BeginPlay()
 	
 }
 
-void ASceneTargetBase::TakeDamage(float Val)
+void ASceneTargetBase::GetPlayer(AActor* Player)
 {
 	FRotator NewRotation = FRotator(90.0f, 0.0f, 0.0f);
 	AddActorLocalRotation(NewRotation);

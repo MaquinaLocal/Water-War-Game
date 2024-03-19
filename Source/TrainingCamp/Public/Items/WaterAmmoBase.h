@@ -21,7 +21,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	virtual void GetPlayerWaterRefill(AActor* Player) override;
+	virtual void GetPlayer(AActor* Player) override;
 
 public:	
 	// Called every frame
