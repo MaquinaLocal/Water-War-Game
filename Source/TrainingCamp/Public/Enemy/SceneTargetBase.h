@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Damageable.h"
+#include "AffectPlayer.h"
 #include "GameFramework/Actor.h"
 #include "SceneTargetBase.generated.h"
 
 UCLASS()
-class TRAININGCAMP_API ASceneTargetBase : public AActor, public IDamageable
+class TRAININGCAMP_API ASceneTargetBase : public AActor, public IAffectPlayer
 {
 	GENERATED_BODY()
 	
@@ -23,7 +23,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void TakeDamage(float Val) override;
+	virtual void GetPlayer(AActor* Player) override;
 
 	UPROPERTY(EditAnywhere, Category = "SpawnTime")
 	float Delay = 5.0f;

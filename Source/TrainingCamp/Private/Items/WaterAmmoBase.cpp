@@ -20,7 +20,7 @@ void AWaterAmmoBase::BeginPlay()
 	
 }
 
-void AWaterAmmoBase::GetPlayerWaterRefill(AActor* Player)
+void AWaterAmmoBase::GetPlayer(AActor* Player)
 {
 	APistolCharacter* PlayerRef = Cast<APistolCharacter>(Player);
 	if (PlayerRef)

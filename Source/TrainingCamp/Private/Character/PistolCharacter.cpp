@@ -152,9 +152,12 @@ void APistolCharacter::PistolShoot()
 		GunWaterLevel -= RegularShot;
 		CheckWaterLevel();
 
+
 		IAffectPlayer* WaterInterface = Cast<IAffectPlayer>(Hit.Actor);
 		if (WaterInterface)
-			WaterInterface->GetPlayerWaterRefill(this);
+		{
+			WaterInterface->GetPlayer(this);
+		}
 
 	}
 }
