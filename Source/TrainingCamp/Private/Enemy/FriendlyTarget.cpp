@@ -4,6 +4,7 @@
 #include "Enemy/FriendlyTarget.h"
 #include "Character/PistolCharacter.h"
 #include "AffectPlayer.h"
+#include "TimerManager.h"
 
 // Sets default values
 AFriendlyTarget::AFriendlyTarget()
@@ -28,12 +29,26 @@ void AFriendlyTarget::GetPlayer(AActor* Player)
 		float Dmg = 1.0f;
 		PlayerRef->TakeDamage(Dmg);
 	}
+
+	bGetHit = true;
+
+	GetWorld()->GetTimerManager().SetTimer(AnimTimer, this, &AFriendlyTarget::ChangeHitValue, Delay, false);
+
+}
+
+void AFriendlyTarget::ChangeHitValue()
+{
+	bGetHit = false;
 }
 
 // Called every frame
 void AFriendlyTarget::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	if (bGetHit == false)
+	{
+		FVector Movement = FVector(WalkSpeed * DeltaTime, 0, 0);
+		AddActorLocalOffset(Movement);
+	}
 }
 

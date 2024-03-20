@@ -25,6 +25,7 @@ void AWaterAmmoBase::GetPlayer(AActor* Player)
 	APistolCharacter* PlayerRef = Cast<APistolCharacter>(Player);
 	if (PlayerRef)
 		PlayerRef->RechargeWaterLevel();
+	Destroy();
 }
 
 
