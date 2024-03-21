@@ -12,12 +12,15 @@ AFriendlyTarget::AFriendlyTarget()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
 }
 
 // Called when the game starts or when spawned
 void AFriendlyTarget::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GetWorld()->GetTimerManager().SetTimer(MovementTimer, this, &AFriendlyTarget::ChangeDirection, MovDelay, true);
 	
 }
 
@@ -32,13 +35,22 @@ void AFriendlyTarget::GetPlayer(AActor* Player)
 
 	bGetHit = true;
 
-	GetWorld()->GetTimerManager().SetTimer(AnimTimer, this, &AFriendlyTarget::ChangeHitValue, Delay, false);
+	GetWorld()->GetTimerManager().SetTimer(AnimTimer, this, &AFriendlyTarget::ChangeHitValue, AnimDelay, false);
 
 }
 
 void AFriendlyTarget::ChangeHitValue()
 {
 	bGetHit = false;
+}
+
+void AFriendlyTarget::ChangeDirection()
+{
+	if (bGetHit == false)
+	{
+		FRotator NewRotation = FRotator(0, WalkRotation, 0);
+		SkeletalMesh->AddRelativeRotation(NewRotation);
+	}
 }
 
 // Called every frame
