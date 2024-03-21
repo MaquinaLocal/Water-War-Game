@@ -25,6 +25,8 @@ public:
 	float Delay = 3.0f;
 	FTimerHandle SpawnDelayHandle;
 
+	int8 iteration = 0;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

@@ -114,7 +114,7 @@ void APistolCharacter::PistolShoot()
 {
 	float PowerShot = 25.0f;
 	float RegularShot = 10.0f;
-
+	/*
 	if (CurrentAmmo == 2 && GunWaterLevel >= PowerShot && bCanShoot == true)
 	{
 		FVector SpawnLocation = FireLocation->GetComponentLocation();
@@ -135,9 +135,27 @@ void APistolCharacter::PistolShoot()
 			}
 		}
 	}
+	*/
 
 	if (CurrentAmmo == 1 && GunWaterLevel >= RegularShot && bCanShoot == true)
 	{
+		//Spawnea el proyectil con física incorporada
+		FVector SpawnLocation = FireLocation->GetComponentLocation();
+		FRotator SpawnRotation = PistolMesh->GetComponentRotation();
+		AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(BPtoSpawn.Get(), SpawnLocation, SpawnRotation);
+
+		if (SpawnedActor)
+		{
+			UStaticMeshComponent* MeshComponent = Cast<UStaticMeshComponent>(SpawnedActor->GetRootComponent());
+			if (MeshComponent)
+			{
+				FVector Forward = PistolMesh->GetForwardVector();
+
+				MeshComponent->SetPhysicsLinearVelocity(-Forward * ImpulseForce * MeshComponent->GetMass());
+			}
+		}
+		
+		//Castea el rayo que afecta a los enemigos
 		FHitResult Hit = ShootingTrace();
 
 		IDamageable* DamageInterface = Cast<IDamageable>(Hit.Actor);
@@ -147,17 +165,19 @@ void APistolCharacter::PistolShoot()
 			DamageInterface->TakeDamage(WeaponDamage * DamageValue);
 		}
 		else if (DamageInterface)
+		{
 			DamageInterface->TakeDamage(WeaponDamage);
-
-		GunWaterLevel -= RegularShot;
-		CheckWaterLevel();
-
+		}
 
 		IAffectPlayer* WaterInterface = Cast<IAffectPlayer>(Hit.Actor);
 		if (WaterInterface)
 		{
 			WaterInterface->GetPlayer(this);
 		}
+
+
+		GunWaterLevel -= RegularShot;
+		CheckWaterLevel();
 
 	}
 }
@@ -186,7 +206,7 @@ FHitResult APistolCharacter::ShootingTrace() const
 
 	GetWorld()->LineTraceSingleByChannel(HitInfo, LineStart, LineEnd, COLLISION_WEAPON);
 
-	DrawDebugLine(GetWorld(), LineStart, LineEnd, FColor::Red, false, 1.0f);
+	//DrawDebugLine(GetWorld(), LineStart, LineEnd, FColor::Red, false, 1.0f);
 
 	return HitInfo;
 }
@@ -195,3 +215,4 @@ void APistolCharacter::TakeDamage(float Dmg)
 {
 	PlayerPoints -= Dmg;
 }
+

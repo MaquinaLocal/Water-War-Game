@@ -21,14 +21,16 @@ void ASpawnerBase::BeginPlay()
 
 void ASpawnerBase::SpawnEnemy()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Hello"));
-
+	
 	int RndEnemy = rand() % EnemiesToSpawn.Num();
 	int RndSpawnPoint = rand() % SpawnPoints.Num();
+
 	TSubclassOf<AActor> EnemyToSpawn = EnemiesToSpawn[RndEnemy];
 	FVector SpawnLocation = SpawnPoints[RndSpawnPoint]->GetActorLocation();
 	FRotator SpawnRotation = SpawnPoints[RndSpawnPoint]->GetActorRotation();
+
 	GetWorld()->SpawnActor<AActor>(EnemyToSpawn, SpawnLocation, SpawnRotation);
+
 }
 
 // Called every frame

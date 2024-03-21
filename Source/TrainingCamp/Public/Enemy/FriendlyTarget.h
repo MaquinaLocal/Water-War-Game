@@ -16,8 +16,14 @@ public:
 	// Sets default values for this actor's properties
 	AFriendlyTarget();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Character")
+	UPROPERTY(EditAnywhere)
+	USkeletalMeshComponent* SkeletalMesh;
+
+	UPROPERTY(EditAnywhere, Category = "Character")
 	float WalkSpeed = 100.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Character")
+	float HitRotation = 60.0f;
 
 protected:
 	// Called when the game starts or when spawned
@@ -29,8 +35,16 @@ protected:
 	bool bGetHit = false;
 
 	FTimerHandle AnimTimer;
-	float Delay = 4.0f;
+	UPROPERTY(EditAnywhere, Category = "Character")
+	float AnimDelay = 4.0f;
 	void ChangeHitValue();
+
+	FTimerHandle MovementTimer;
+	UPROPERTY(EditAnywhere, Category = "Character")
+	float MovDelay = 15.0f;
+	void ChangeDirection();
+
+	float WalkRotation = 180.0f;
 
 public:	
 	// Called every frame
