@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "GameFramework/Pawn.h"
 #include "AffectPlayer.h"
 #include "FriendlyTarget.generated.h"
 
 UCLASS()
-class TRAININGCAMP_API AFriendlyTarget : public AActor, public IAffectPlayer
+class TRAININGCAMP_API AFriendlyTarget : public APawn, public IAffectPlayer
 {
 	GENERATED_BODY()
 	
