@@ -20,7 +20,7 @@ public:
 	UPROPERTY(VisibleDefaultsOnly)
 	UCapsuleComponent* CapsuleComponent;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	USkeletalMeshComponent* SkeletalMesh;
 
 	UPROPERTY(EditAnywhere)
@@ -50,12 +50,13 @@ public:
 protected:
 	//Creación del timer para el sistema de estadísticas
 	FTimerHandle TimerHandle;
-	float TimerDelay = 2.0f;
+	float TimerDelay = 1.0f;
 	void SetHitToFalse();
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION(BlueprintCallable)
 	void TakeDamage(float Dmg) override;
 
 	void OrientRotationToMovement();
