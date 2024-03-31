@@ -8,6 +8,8 @@
 #include "Character/ProjectileBase.h"
 #include "Components/PrimitiveComponent.h"
 #include "DrawDebugHelpers.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Damageable.h"
 #include "AffectPlayer.h"
 
@@ -90,6 +92,7 @@ void APistolCharacter::LookUp(float Val)
 	{
 		FRotator NewRotation(Val, 0.0f, 0.0f);
 		PistolMesh->AddRelativeRotation(NewRotation);
+		FireLocation->AddRelativeRotation(NewRotation*-1);
 	}
 }
 
@@ -99,6 +102,7 @@ void APistolCharacter::TurnRight(float Val)
 	{
 		FRotator NewRotation(0.0f, Val, 0.0f);
 		PistolMesh->AddRelativeRotation(NewRotation);
+		FireLocation->AddRelativeRotation(NewRotation);
 	}
 }
 
@@ -114,36 +118,16 @@ void APistolCharacter::PistolShoot()
 {
 	float PowerShot = 25.0f;
 	float RegularShot = 10.0f;
-	/*
-	if (CurrentAmmo == 2 && GunWaterLevel >= PowerShot && bCanShoot == true)
-	{
-		FVector SpawnLocation = FireLocation->GetComponentLocation();
-		FRotator SpawnRotation = PistolMesh->GetComponentRotation();
-		AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(BPtoSpawn.Get(), SpawnLocation, SpawnRotation);
-
-		if (SpawnedActor)
-		{
-			UStaticMeshComponent* MeshComponent = Cast<UStaticMeshComponent>(SpawnedActor->GetRootComponent());
-			if (MeshComponent)
-			{
-				FVector Forward = PistolMesh->GetForwardVector();
-
-				MeshComponent->SetPhysicsLinearVelocity(-Forward * ImpulseForce * MeshComponent->GetMass());
-
-				GunWaterLevel -= PowerShot;
-				CheckWaterLevel();
-			}
-		}
-	}
-	*/
-
+	
 	if (CurrentAmmo == 1 && GunWaterLevel >= RegularShot && bCanShoot == true)
 	{
 		//Spawnea el proyectil con física incorporada
+		/*
 		FVector SpawnLocation = FireLocation->GetComponentLocation();
 		FRotator SpawnRotation = PistolMesh->GetComponentRotation();
 		AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(BPtoSpawn.Get(), SpawnLocation, SpawnRotation);
-
+		*/
+		/*
 		if (SpawnedActor)
 		{
 			UStaticMeshComponent* MeshComponent = Cast<UStaticMeshComponent>(SpawnedActor->GetRootComponent());
@@ -154,9 +138,12 @@ void APistolCharacter::PistolShoot()
 				MeshComponent->SetPhysicsLinearVelocity(-Forward * ImpulseForce * MeshComponent->GetMass());
 			}
 		}
-		
+		*/
+
 		//Castea el rayo que afecta a los enemigos
 		FHitResult Hit = ShootingTrace();
+		
+		SpawnEmitterAtLocation(Hit.Location, FRotator::ZeroRotator);
 
 		IDamageable* DamageInterface = Cast<IDamageable>(Hit.Actor);
 		if (DamageInterface && BoneDamage.Contains(Hit.BoneName))
@@ -174,7 +161,6 @@ void APistolCharacter::PistolShoot()
 		{
 			WaterInterface->GetPlayer(this);
 		}
-
 
 		GunWaterLevel -= RegularShot;
 		CheckWaterLevel();
@@ -200,13 +186,13 @@ void APistolCharacter::RechargeWaterLevel()
 FHitResult APistolCharacter::ShootingTrace() const
 {
 	FHitResult HitInfo;
-	FVector LineStart = PistolMesh->GetComponentLocation();
-	FVector Forward = PistolMesh->GetForwardVector();
-	FVector LineEnd = LineStart + -Forward * TraceRange;
+	FVector LineStart = FireLocation->GetComponentLocation();
+	FVector Forward = FireLocation->GetForwardVector();
+	FVector LineEnd = LineStart + Forward * TraceRange;
 
 	GetWorld()->LineTraceSingleByChannel(HitInfo, LineStart, LineEnd, COLLISION_WEAPON);
 
-	//DrawDebugLine(GetWorld(), LineStart, LineEnd, FColor::Red, false, 1.0f);
+	DrawDebugLine(GetWorld(), LineStart, LineEnd, FColor::Cyan, false, 0.2f, 0, 1);
 
 	return HitInfo;
 }
@@ -214,5 +200,9 @@ FHitResult APistolCharacter::ShootingTrace() const
 void APistolCharacter::TakeDamage(float Dmg)
 {
 	PlayerPoints -= Dmg;
+}
+
+void APistolCharacter::SpawnEmitterAtLocation(const FVector& Location, const FRotator& Rotation)
+{
 }
 

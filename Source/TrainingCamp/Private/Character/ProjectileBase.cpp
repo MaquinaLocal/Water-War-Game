@@ -22,6 +22,8 @@ void AProjectileBase::BeginPlay()
 void AProjectileBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	AddActorLocalOffset(FVector(-MovSpeed, 0, 0) * DeltaTime);
 }
 
 void AProjectileBase::AddPhysics()

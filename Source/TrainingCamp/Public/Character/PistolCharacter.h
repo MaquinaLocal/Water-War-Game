@@ -79,4 +79,6 @@ public:
 	void CheckWaterLevel();
 	void TakeDamage(float Dmg);
 
+	void SpawnEmitterAtLocation(const FVector& Location, const FRotator& Rotation);
+
 };
