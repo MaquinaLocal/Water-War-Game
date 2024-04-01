@@ -58,6 +58,7 @@ protected:
 
 	int8 CurrentAmmo = 1;
 
+	void RayTraceCast();
 	FHitResult ShootingTrace() const;
 	float TraceRange = 5000.0f;
 
