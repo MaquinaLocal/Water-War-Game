@@ -20,7 +20,8 @@ void AFriendlyTarget::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetWorld()->GetTimerManager().SetTimer(MovementTimer, this, &AFriendlyTarget::ChangeDirection, MovDelay, true);
+	if (MovDelay != 0.0f)
+		GetWorld()->GetTimerManager().SetTimer(MovementTimer, this, &AFriendlyTarget::ChangeDirection, MovDelay, true);
 	
 }
 

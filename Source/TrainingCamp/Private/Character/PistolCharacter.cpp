@@ -121,50 +121,15 @@ void APistolCharacter::PistolShoot()
 	
 	if (CurrentAmmo == 1 && GunWaterLevel >= RegularShot && bCanShoot == true)
 	{
-		//Spawnea el proyectil con física incorporada
-		/*
-		FVector SpawnLocation = FireLocation->GetComponentLocation();
-		FRotator SpawnRotation = PistolMesh->GetComponentRotation();
-		AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(BPtoSpawn.Get(), SpawnLocation, SpawnRotation);
-		*/
-		/*
-		if (SpawnedActor)
-		{
-			UStaticMeshComponent* MeshComponent = Cast<UStaticMeshComponent>(SpawnedActor->GetRootComponent());
-			if (MeshComponent)
-			{
-				FVector Forward = PistolMesh->GetForwardVector();
-
-				MeshComponent->SetPhysicsLinearVelocity(-Forward * ImpulseForce * MeshComponent->GetMass());
-			}
-		}
-		*/
-
-		//Castea el rayo que afecta a los enemigos
-		FHitResult Hit = ShootingTrace();
+		RayTraceCast();
 		
-		SpawnEmitterAtLocation(Hit.Location, FRotator::ZeroRotator);
-
-		IDamageable* DamageInterface = Cast<IDamageable>(Hit.Actor);
-		if (DamageInterface && BoneDamage.Contains(Hit.BoneName))
-		{
-			float DamageValue = BoneDamage[Hit.BoneName];
-			DamageInterface->TakeDamage(WeaponDamage * DamageValue);
-		}
-		else if (DamageInterface)
-		{
-			DamageInterface->TakeDamage(WeaponDamage);
-		}
-
-		IAffectPlayer* WaterInterface = Cast<IAffectPlayer>(Hit.Actor);
-		if (WaterInterface)
-		{
-			WaterInterface->GetPlayer(this);
-		}
-
 		GunWaterLevel -= RegularShot;
 		CheckWaterLevel();
-
+	}
+	else if (GunWaterLevel <= 0.0f)
+	{
+		RayTraceCast();
+		TakeDamage(1.0f);
 	}
 }
 
@@ -181,6 +146,31 @@ void APistolCharacter::RechargeWaterLevel()
 {
 	GunWaterLevel = MaxWaterLevel;
 	bCanShoot = true;
+}
+
+void APistolCharacter::RayTraceCast()
+{
+	//Castea el rayo que afecta a los enemigos
+	FHitResult Hit = ShootingTrace();
+
+	SpawnEmitterAtLocation(Hit.Location, FRotator::ZeroRotator);
+
+	IDamageable* DamageInterface = Cast<IDamageable>(Hit.Actor);
+	if (DamageInterface && BoneDamage.Contains(Hit.BoneName))
+	{
+		float DamageValue = BoneDamage[Hit.BoneName];
+		DamageInterface->TakeDamage(WeaponDamage * DamageValue);
+	}
+	else if (DamageInterface)
+	{
+		DamageInterface->TakeDamage(WeaponDamage);
+	}
+
+	IAffectPlayer* WaterInterface = Cast<IAffectPlayer>(Hit.Actor);
+	if (WaterInterface)
+	{
+		WaterInterface->GetPlayer(this);
+	}
 }
 
 FHitResult APistolCharacter::ShootingTrace() const

@@ -68,7 +68,7 @@ void AEnemyBase::ShootPlayer()
 		FVector LineEnd = LineStart + Forward * TraceRange;
 
 		GetWorld()->LineTraceSingleByChannel(HitInfo, LineStart, LineEnd, COLLISION);
-		DrawDebugLine(GetWorld(), LineStart, LineEnd, FColor::Orange, false, 1.0f);
+		DrawDebugLine(GetWorld(), LineStart, LineEnd, FColor::Cyan, false, 0.3f, 0, 2);
 
 		APistolCharacter* PlayerRef = Cast<APistolCharacter>(HitInfo.Actor);
 		if (PlayerRef)
