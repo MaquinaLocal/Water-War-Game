@@ -4,6 +4,7 @@
 #include "Enemy/EnemyBase.h"
 #include "TimerManager.h"
 #include "DrawDebugHelpers.h"
+#include "Kismet/GameplayStatics.h"
 #include "Character/PistolCharacter.h"
 
 #define COLLISION		ECC_GameTraceChannel3
@@ -50,6 +51,8 @@ void AEnemyBase::Tick(float DeltaTime)
 	else
 		isMoving = false;
 }
+///////////////////////////////////////////////////////////////
+
 
 void AEnemyBase::OrientRotationToMovement()
 {
@@ -57,6 +60,7 @@ void AEnemyBase::OrientRotationToMovement()
 
 	SetActorRotation(NewRotation);
 }
+
 
 void AEnemyBase::ShootPlayer()
 {
@@ -70,6 +74,9 @@ void AEnemyBase::ShootPlayer()
 		GetWorld()->LineTraceSingleByChannel(HitInfo, LineStart, LineEnd, COLLISION);
 		DrawDebugLine(GetWorld(), LineStart, LineEnd, FColor::Cyan, false, 0.3f, 0, 2);
 
+		if (FireSound)
+			PlaySoundAtLocation(FireSound);
+
 		APistolCharacter* PlayerRef = Cast<APistolCharacter>(HitInfo.Actor);
 		if (PlayerRef)
 		{
@@ -79,8 +86,8 @@ void AEnemyBase::ShootPlayer()
 
 }
 
-///////////////////////////////////////////////////////////////
-// Called to bind functionality to input
+
+// Input
 void AEnemyBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -94,10 +101,19 @@ void AEnemyBase::TakeDamage(float Dmg)
 	bGetHit = true;
 	EnemyPoints -= Dmg;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AEnemyBase::SetHitToFalse, TimerDelay, false);
+
+	if (TakeDamageSound)
+		PlaySoundAtLocation(TakeDamageSound);
 }
 
 
 void AEnemyBase::SetHitToFalse()
 {
 	bGetHit = false;
+}
+
+
+void AEnemyBase::PlaySoundAtLocation(USoundBase* SoundToPlay)
+{
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundToPlay, GetActorLocation());
 }
