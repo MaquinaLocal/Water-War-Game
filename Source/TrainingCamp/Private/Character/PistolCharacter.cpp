@@ -14,6 +14,7 @@
 #include "AffectPlayer.h"
 
 #define COLLISION_WEAPON		ECC_GameTraceChannel1
+////////////////////////////////////////////////////////////////////////////////////////
 // Sets default values
 APistolCharacter::APistolCharacter()
 {
@@ -55,8 +56,9 @@ void APistolCharacter::Tick(float DeltaTime)
 	UpdateReticleByRayTrace();
 
 }
+////////////////////////////////////////////////////////////////////////////////////////
 
-
+//Actualiza posición de la retícula
 void APistolCharacter::UpdateReticleByRayTrace()
 {
 	FVector LineStart = PistolMesh->GetComponentLocation();
@@ -75,7 +77,7 @@ void APistolCharacter::UpdateReticleByRayTrace()
 }
 
 
-// Called to bind functionality to input
+//Inputs
 void APistolCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -88,6 +90,7 @@ void APistolCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 }
 
 
+//Movimiento del arma vertical
 void APistolCharacter::LookUp(float Val)
 {
 	if (Val != 0.0f)
@@ -99,6 +102,7 @@ void APistolCharacter::LookUp(float Val)
 }
 
 
+//Movimiento del arma horizontal
 void APistolCharacter::TurnRight(float Val)
 {
 	if (Val != 0.0f)
@@ -110,6 +114,7 @@ void APistolCharacter::TurnRight(float Val)
 }
 
 
+//Cambio de munición
 void APistolCharacter::ToggleAmmo()
 {
 	if (CurrentAmmo == 1)
@@ -119,28 +124,34 @@ void APistolCharacter::ToggleAmmo()
 }
 
 
+//Disparo de arma
 void APistolCharacter::PistolShoot()
 {
 	float PowerShot = 25.0f;
 	float RegularShot = 10.0f;
 	
-	if (CurrentAmmo == 1 && GunWaterLevel >= RegularShot && bCanShoot == true)
-	{
+	if (CurrentAmmo == 1 && GunWaterLevel >= RegularShot && bCanShoot == true) {
+
 		RayTraceCast();
 		
 		GunWaterLevel -= RegularShot;
 		CheckWaterLevel();
 
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundToPlay, GetActorLocation());
+		if (FireSound)
+			PlaySoundAtLocation(FireSound);
 	}
-	else if (GunWaterLevel <= 0.0f)
-	{
+	else if (GunWaterLevel <= 0.0f) {
+
 		RayTraceCast();
 		TakeDamage(1.0f);
+
+		if (NoAmmoSound)
+			PlaySoundAtLocation(NoAmmoSound);
 	}
 }
 
 
+//Controla nivel de agua
 void APistolCharacter::CheckWaterLevel()
 {
 	if (GunWaterLevel <= 0.0f)
@@ -150,16 +161,20 @@ void APistolCharacter::CheckWaterLevel()
 }
 
 
+//Recarga nivel de agua
 void APistolCharacter::RechargeWaterLevel()
 {
 	GunWaterLevel = MaxWaterLevel;
 	bCanShoot = true;
+
+	if (ReloadAmmoSound)
+		PlaySoundAtLocation(ReloadAmmoSound);
 }
 
 
+//Castea a las interfaces de daño
 void APistolCharacter::RayTraceCast()
 {
-	//Castea el rayo que afecta a los enemigos
 	FHitResult Hit = ShootingTrace();
 
 	SpawnEmitterAtLocation(Hit.Location, FRotator::ZeroRotator);
@@ -183,6 +198,7 @@ void APistolCharacter::RayTraceCast()
 }
 
 
+//Castea el rayo a partir del disparo. Llamada desde RayTraceCast
 FHitResult APistolCharacter::ShootingTrace() const
 {
 	FHitResult HitInfo;
@@ -197,12 +213,26 @@ FHitResult APistolCharacter::ShootingTrace() const
 	return HitInfo;
 }
 
+
+//Jugador recibe daño
 void APistolCharacter::TakeDamage(float Dmg)
 {
 	PlayerPoints -= Dmg;
+
+	if (TakeDamageSound)
+		PlaySoundAtLocation(TakeDamageSound);
 }
 
+
+//Emisión de partículas
 void APistolCharacter::SpawnEmitterAtLocation(const FVector& Location, const FRotator& Rotation)
 {
+}
+
+
+//Reproducción de sonidos
+void APistolCharacter::PlaySoundAtLocation(USoundBase* SoundToPlay)
+{
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundToPlay, GetActorLocation());
 }
 

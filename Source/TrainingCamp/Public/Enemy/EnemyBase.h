@@ -47,6 +47,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool bGetHit = false;
 
+	UPROPERTY(EditAnywhere, Category = "Sounds")
+	USoundBase* FireSound;
+
+	UPROPERTY(EditAnywhere, Category = "Sounds")
+	USoundBase* TakeDamageSound;
+
 protected:
 	//Creación del timer para el sistema de estadísticas
 	FTimerHandle TimerHandle;
@@ -65,6 +71,8 @@ protected:
 	void ShootPlayer();
 
 	float TraceRange = 5000.0f;
+
+	void PlaySoundAtLocation(USoundBase* SoundToPlay);
 
 public:	
 	// Called every frame
