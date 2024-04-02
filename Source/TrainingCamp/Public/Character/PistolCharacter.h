@@ -54,6 +54,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Win Condition")
 	float PlayerPoints = 20.0f;
 
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	USoundBase* SoundToPlay;
+
 	bool bCanShoot = true;
 
 	int8 CurrentAmmo = 1;
@@ -73,7 +76,10 @@ public:
 
 	void LookUp(float Val);
 	void TurnRight(float Val);
+
+	//disparo del arma
 	void PistolShoot();
+
 	void ToggleAmmo();
 
 	void RechargeWaterLevel();

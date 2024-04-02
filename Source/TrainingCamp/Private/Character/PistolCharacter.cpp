@@ -38,13 +38,13 @@ APistolCharacter::APistolCharacter()
 
 }
 
+
 // Called when the game starts or when spawned
 void APistolCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
-
 
 
 // Called every frame
@@ -55,6 +55,7 @@ void APistolCharacter::Tick(float DeltaTime)
 	UpdateReticleByRayTrace();
 
 }
+
 
 void APistolCharacter::UpdateReticleByRayTrace()
 {
@@ -86,6 +87,7 @@ void APistolCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("ToggleAmmo", IE_Pressed, this, &APistolCharacter::ToggleAmmo);
 }
 
+
 void APistolCharacter::LookUp(float Val)
 {
 	if (Val != 0.0f)
@@ -95,6 +97,7 @@ void APistolCharacter::LookUp(float Val)
 		FireLocation->AddRelativeRotation(NewRotation*-1);
 	}
 }
+
 
 void APistolCharacter::TurnRight(float Val)
 {
@@ -106,6 +109,7 @@ void APistolCharacter::TurnRight(float Val)
 	}
 }
 
+
 void APistolCharacter::ToggleAmmo()
 {
 	if (CurrentAmmo == 1)
@@ -113,6 +117,7 @@ void APistolCharacter::ToggleAmmo()
 	else
 		CurrentAmmo = 1;
 }
+
 
 void APistolCharacter::PistolShoot()
 {
@@ -125,6 +130,8 @@ void APistolCharacter::PistolShoot()
 		
 		GunWaterLevel -= RegularShot;
 		CheckWaterLevel();
+
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundToPlay, GetActorLocation());
 	}
 	else if (GunWaterLevel <= 0.0f)
 	{
@@ -142,11 +149,13 @@ void APistolCharacter::CheckWaterLevel()
 		bCanShoot = true;
 }
 
+
 void APistolCharacter::RechargeWaterLevel()
 {
 	GunWaterLevel = MaxWaterLevel;
 	bCanShoot = true;
 }
+
 
 void APistolCharacter::RayTraceCast()
 {
@@ -172,6 +181,7 @@ void APistolCharacter::RayTraceCast()
 		WaterInterface->GetPlayer(this);
 	}
 }
+
 
 FHitResult APistolCharacter::ShootingTrace() const
 {
