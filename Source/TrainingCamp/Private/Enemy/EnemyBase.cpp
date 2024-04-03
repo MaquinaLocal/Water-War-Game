@@ -80,7 +80,7 @@ void AEnemyBase::ShootPlayer()
 		APistolCharacter* PlayerRef = Cast<APistolCharacter>(HitInfo.Actor);
 		if (PlayerRef)
 		{
-			PlayerRef->TakeDamage(WeaponDamage);
+			PlayerRef->PlayerReceiveDamage(WeaponDamage);
 		}
 	}
 

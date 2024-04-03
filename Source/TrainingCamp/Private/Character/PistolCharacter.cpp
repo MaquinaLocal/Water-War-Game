@@ -143,7 +143,7 @@ void APistolCharacter::PistolShoot()
 	else if (GunWaterLevel <= 0.0f) {
 
 		RayTraceCast();
-		TakeDamage(1.0f);
+		PlayerReceiveDamage(1.0f);
 
 		if (NoAmmoSound)
 			PlaySoundAtLocation(NoAmmoSound);
@@ -215,7 +215,7 @@ FHitResult APistolCharacter::ShootingTrace() const
 
 
 //Jugador recibe daño
-void APistolCharacter::TakeDamage(float Dmg)
+void APistolCharacter::PlayerReceiveDamage(float Dmg)
 {
 	PlayerPoints -= Dmg;
 
