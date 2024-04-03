@@ -115,7 +115,7 @@ public:
 	void CheckWaterLevel();
 
 	//Recibir daño del enemigo
-	void TakeDamage(float Dmg);
+	void PlayerReceiveDamage(float Dmg);
 
 	//Emisión de partículas
 	void SpawnEmitterAtLocation(const FVector& Location, const FRotator& Rotation);

@@ -31,7 +31,7 @@ void AFriendlyTarget::GetPlayer(AActor* Player)
 	if (PlayerRef)
 	{
 		float Dmg = 1.0f;
-		PlayerRef->TakeDamage(Dmg);
+		PlayerRef->PlayerReceiveDamage(Dmg);
 	}
 
 	bGetHit = true;
